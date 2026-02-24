@@ -12,7 +12,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/voaneves/travian-building-order">
-    <span style="font-size: 80px;">🌾</span>
+    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f33e.svg" alt="Travian Crop Logo" width="120" height="120">
   </a>
   <h3 align="center">travian-building-order</h3>
   <p align="center">
@@ -119,3 +119,57 @@ Afinal, a verdadeira eficiência está em utilizar a automação a nosso favor. 
 
    ```bash
    git clone [https://github.com/voaneves/travian-building-order.git](https://github.com/voaneves/travian-building-order.git)
+   ```
+
+2. Dê um clique duplo no arquivo `index.html` para abri-lo no seu navegador favorito.
+
+3. Configure os parâmetros da sua aldeia no painel superior.
+
+4. Clique no botão **Gerar Fila Perfeita** e siga a tabela de construção!
+
+<p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
+
+## A Fazer
+
+- [ ] Incluir suporte a heróis com bônus de produção de recursos.
+- [ ] Adicionar funcionalidade de exportação da tabela gerada para CSV ou PDF.
+- [ ] Implementar modo escuro (Dark Mode) para jogatinas noturnas.
+
+<p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
+
+## Reportando bugs
+
+Encontrou algum problema nos cálculos ou na interface? Siga o passo a passo:
+
+1. Verifique se o bug já foi relatado na nossa aba de "Issues" no GitHub.
+
+2. Se não encontrar um relato existente, clique em "New Issue" para abrir um novo chamado.
+
+3. Forneça um título claro, descrevendo também os passos necessários para reproduzir o erro (ex: informando os níveis de Oásis que você selecionou).
+
+4. Se possível, inclua capturas de tela do seu painel.
+
+5. Clique em "Submit Issue". 
+
+Agradecemos o seu feedback! Se quiser contribuir diretamente no código, abra um Pull Request. Toda ajuda é bem-vinda para deixarmos esse projeto cada vez melhor.
+
+<p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
+
+## Licença
+
+Este projeto é licenciado sob a [MIT License](/LICENSE).
+
+<p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
+
+[contributors-shield]: https://img.shields.io/github/contributors/voaneves/travian-building-order.svg?style=for-the-badge
+[contributors-url]: https://github.com/voaneves/travian-building-order/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/voaneves/travian-building-order.svg?style=for-the-badge
+[forks-url]: https://github.com/voaneves/travian-building-order/network/members
+[stars-shield]: https://img.shields.io/github/stars/voaneves/travian-building-order.svg?style=for-the-badge
+[stars-url]: https://github.com/voaneves/travian-building-order/stargazers
+[issues-shield]: https://img.shields.io/github/issues/voaneves/travian-building-order.svg?style=for-the-badge
+[issues-url]: https://github.com/voaneves/travian-building-order/issues
+[license-shield]: https://img.shields.io/github/license/voaneves/travian-building-order.svg?style=for-the-badge
+[license-url]: https://github.com/voaneves/travian-building-order/blob/main/LICENSE
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/voaneves

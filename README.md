@@ -66,7 +66,8 @@ Pontos-chave para prestar atenção:
 - **Retorno sobre Investimento (ROI):** O algoritmo foca em entregar o menor tempo de retorno para cada ação.
 - **Ação Direta:** Fornece não apenas os níveis, mas a exigência mínima de Celeiro para a próxima obra.
 - **Produtividade:** Salva sua configuração, gera link compartilhável, marca passos concluídos, filtra a fila e exporta em CSV ou texto (TSV).
-- **Tema e atalhos:** Tema automático, claro ou escuro e atalhos de teclado (Ctrl+Enter, T, [).
+- **Vistas e navegação:** Menu lateral recolhível com vistas por rota (`#/config`, `#/fila`, `#/sobre`), gaveta no celular e layout que se adapta de 320px a ultrawide.
+- **Acessibilidade:** Painel com tema automático/claro/escuro, alto contraste, tamanho e espaçamento de texto, fonte legível, redução de animações e foco reforçado, além de atalhos de teclado (Ctrl+Enter, T, [).
 
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 

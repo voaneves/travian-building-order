@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#ffffff">
+    <script>try { var t = localStorage.getItem("tbo-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BE%3C/text%3E%3C/svg%3E">
     <title>Travian: Otimizador de Crop & Infraestrutura</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -136,7 +138,7 @@
         .nav-item:hover { background: var(--surface-2); color: var(--text); }
         .nav-item[aria-current="true"] { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
         .nav-icon { flex: none; width: 24px; text-align: center; font-size: 18px; line-height: 1; }
-        .sidebar-foot { padding: 12px 20px; border-top: 1px solid var(--border); color: var(--text-2); font-size: 12px; white-space: nowrap; }
+        .sidebar-foot { padding: 12px 20px; border-top: 1px solid var(--border); color: var(--text-2); font-size: 12px; line-height: 2; }
 
         .shell.collapsed .sidebar { flex-basis: var(--sidebar-w-collapsed); width: var(--sidebar-w-collapsed); }
         .shell.collapsed .brand { padding: 0 20px; }
@@ -252,6 +254,58 @@
         .about p:last-child { margin-bottom: 0; }
         .about a { color: var(--primary); }
 
+        /* ===== Seletor de tema ===== */
+        .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; padding: 2px; gap: 2px; background: var(--surface-2); }
+        .seg button {
+            min-height: 36px; min-width: 40px; padding: 0 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            border: 0; border-radius: 6px; background: transparent; color: var(--text-2); cursor: pointer; font-size: 13px; font-weight: 500;
+        }
+        .seg button:hover { color: var(--text); }
+        .seg button[aria-checked="true"] { background: var(--surface); color: var(--primary); font-weight: 600; box-shadow: 0 0 0 1px var(--border); }
+
+        /* ===== Ações, resumo, barra de ferramentas ===== */
+        .section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+        .section-head .section-title { margin: 0; }
+        .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .btn {
+            min-height: 40px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 8px; font-weight: 500; cursor: pointer; white-space: nowrap;
+        }
+        .btn:hover:not(:disabled) { background: var(--surface-2); border-color: var(--text-2); }
+        .btn:disabled { opacity: .5; cursor: default; }
+        .stats { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); margin-bottom: 16px; }
+        .stat-label { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--text-2); }
+        .stat-value { font-size: 26px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; color: var(--primary); }
+        .stat-sub { font-size: 12px; color: var(--text-2); }
+        .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
+        .toolbar .search { flex: 1 1 220px; min-width: 0; }
+        .search input {
+            width: 100%; min-height: 40px; padding: 0 12px; font: inherit; color: var(--text);
+            background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+        }
+        .search input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--focus); }
+        .filter-count { flex-basis: 100%; font-size: 12px; color: var(--text-2); margin: -4px 0 0; min-height: 0; }
+        .progress-row { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+        .bar { flex: 1 1 160px; height: 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); overflow: hidden; }
+        .bar > span { display: block; height: 100%; width: 0; background: var(--primary); transition: width .2s ease; }
+        .prog-text { font-size: 12px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+        .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+        .table-card th.c-chk, .table-card td.c-chk { width: 48px; text-align: center; padding: 6px 8px; cursor: pointer; }
+        input.chk { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; }
+        .table-card tbody tr:focus-within:not(.row-total) { background: var(--primary-soft); box-shadow: inset 0 0 0 2px var(--focus); }
+        .table-card tbody tr.next:not(.row-total) td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
+        .table-card tbody tr.done td:not(.c-chk) { opacity: .6; }
+        .table-card tbody tr[hidden] { display: none; }
+        kbd { font: inherit; font-size: 11px; padding: 0 5px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; background: var(--surface-2); color: var(--text); }
+        .toast {
+            position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 16px); z-index: 60; max-width: calc(100vw - 32px);
+            padding: 10px 16px; border-radius: 8px; background: var(--text); color: var(--bg); font-weight: 500;
+            opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+        }
+        .toast:empty { display: none; }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+        @media (max-width: 899.98px) { .seg-label { display: none; } .seg button { padding: 0; } }
+
         /* ===== Telas estreitas: drawer ===== */
         @media (max-width: 767.98px) {
             .page { padding: 16px; }
@@ -278,7 +332,7 @@
         }
 
         @media print {
-            .sidebar, .appbar, .backdrop, .no-print, #status { display: none !important; }
+            .sidebar, .appbar, .backdrop, .no-print, #status, .toast, .c-chk { display: none !important; }
             html, body, .shell, .main-col, .content { height: auto !important; overflow: visible !important; display: block; }
             body { background: #fff; color: #000; }
             .page { padding: 0; }
@@ -308,7 +362,7 @@
                 <span class="nav-icon" aria-hidden="true">ℹ️</span><span class="nav-label">Sobre</span>
             </a>
         </nav>
-        <div class="sidebar-foot">Fila ótima de crop</div>
+        <div class="sidebar-foot" title="Atalhos de teclado"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> gerar · <kbd>T</kbd> tema · <kbd>[</kbd> menu</div>
     </aside>
     <div class="backdrop" id="backdrop" aria-hidden="true"></div>
 
@@ -326,9 +380,11 @@
                 <span class="sep" aria-hidden="true">/</span>
                 <span class="crumb-current" id="crumb-current">Configuração</span>
             </div>
-            <button type="button" class="icon-btn theme-btn" id="theme-btn" aria-label="Tema: sistema. Clique para alternar">
-                <span id="theme-icon" aria-hidden="true">🖥️</span><span class="theme-label" id="theme-label">Sistema</span>
-            </button>
+            <div class="seg" id="theme-seg" role="radiogroup" aria-label="Tema">
+                <button type="button" role="radio" aria-checked="true" data-mode="auto" aria-label="Automático (segue o sistema)" title="Automático (segue o sistema)"><span aria-hidden="true">🖥️</span><span class="seg-label">Automático</span></button>
+                <button type="button" role="radio" aria-checked="false" data-mode="light" aria-label="Claro" title="Claro"><span aria-hidden="true">☀️</span><span class="seg-label">Claro</span></button>
+                <button type="button" role="radio" aria-checked="false" data-mode="dark" aria-label="Escuro" title="Escuro"><span aria-hidden="true">🌙</span><span class="seg-label">Escuro</span></button>
+            </div>
         </header>
 
         <!-- Conteúdo -->
@@ -340,7 +396,13 @@
                 </div>
 
                 <section id="sec-config" class="no-print" aria-labelledby="t-config">
-                    <h2 class="section-title" id="t-config">Configuração</h2>
+                    <div class="section-head">
+                        <h2 class="section-title" id="t-config">Configuração</h2>
+                        <div class="actions">
+                            <button type="button" class="btn" id="btn-link"><span aria-hidden="true">🔗</span> Copiar link</button>
+                            <button type="button" class="btn" id="btn-reset"><span aria-hidden="true">↺</span> Restaurar padrão</button>
+                        </div>
+                    </div>
                     <div class="cards">
 
                         <!-- Grupo 1: Configurações Básicas -->
@@ -426,6 +488,22 @@
                         Processando os melhores cenários...
                     </div>
                     <p class="empty no-print" id="empty-hint">Ajuste a configuração e clique em “Gerar Fila Perfeita”.</p>
+                    <div class="cards stats no-print hidden" id="summary">
+                        <div class="card"><div class="stat-label">Total de passos</div><div class="stat-value" id="st-steps">0</div><div class="stat-sub">construções na fila</div></div>
+                        <div class="card"><div class="stat-label">Produção final</div><div class="stat-value" id="st-prod">0</div><div class="stat-sub">cereal por hora (com bônus de ouro)</div></div>
+                        <div class="card"><div class="stat-label">Ganho vs. início</div><div class="stat-value" id="st-gain">0</div><div class="stat-sub" id="st-gain-sub"></div></div>
+                    </div>
+                    <div class="toolbar no-print hidden" id="toolbar">
+                        <div class="search"><label class="sr-only" for="filter">Filtrar a fila</label><input type="search" id="filter" placeholder="Filtrar a fila (ex.: moinho, aqueduto, nv. 5)" autocomplete="off"></div>
+                        <button type="button" class="btn" id="btn-copy"><span aria-hidden="true">📋</span> Copiar fila</button>
+                        <button type="button" class="btn" id="btn-csv"><span aria-hidden="true">⬇️</span> Baixar CSV</button>
+                        <p class="filter-count" id="filter-count" aria-live="polite"></p>
+                        <div class="progress-row">
+                            <div class="bar" id="prog-bar" role="progressbar" aria-label="Progresso da fila" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><span></span></div>
+                            <span class="prog-text" id="prog-text"></span>
+                            <button type="button" class="btn" id="btn-clear" disabled>Limpar concluídas</button>
+                        </div>
+                    </div>
                     <div id="demo" class="table-card hidden">
                         <!-- A tabela será gerada aqui -->
                     </div>
@@ -440,6 +518,8 @@
         </main>
     </div>
 </div>
+
+<div class="toast no-print" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 // Variáveis Globais de Estado
@@ -733,37 +813,67 @@ function generateRowHTML(index, stepResult) {
 </script>
 
 <script>
-// Casco da aplicação: tema, sidebar e navegação (independente do otimizador)
+// Casco da aplicação: tema, sidebar, navegação, persistência, exportação (independente da lógica do otimizador)
 (function () {
     const root = document.documentElement;
     const shell = document.getElementById('shell');
     const content = document.getElementById('content');
     const menuBtn = document.getElementById('menu-btn');
     const collapseBtn = document.getElementById('collapse-btn');
-    const themeBtn = document.getElementById('theme-btn');
     const mq = window.matchMedia('(max-width: 767.98px)');
+    const mqDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const $ = function (id) { return document.getElementById(id); };
 
     function store(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
     function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 
-    // Tema: system -> light -> dark
-    const THEMES = { system: ['🖥️', 'Sistema'], light: ['☀️', 'Claro'], dark: ['🌙', 'Escuro'] };
-    let theme = load('tbo-theme');
-    if (!THEMES[theme]) theme = 'system';
-    function applyTheme() {
-        if (theme === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', theme);
-        document.getElementById('theme-icon').textContent = THEMES[theme][0];
-        document.getElementById('theme-label').textContent = THEMES[theme][1];
-        themeBtn.setAttribute('aria-label', 'Tema: ' + THEMES[theme][1].toLowerCase() + '. Clique para alternar');
+    // ===== Toast acessível =====
+    let toastTimer = null;
+    function toast(msg) {
+        const t = $('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { t.classList.remove('show'); t.textContent = ''; }, 2600);
     }
-    themeBtn.addEventListener('click', function () {
-        theme = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
-        store('tbo-theme', theme === 'system' ? null : theme);
-        applyTheme();
-    });
-    applyTheme();
 
-    // Sidebar recolhível (desktop)
+    // ===== Tema: Automático / Claro / Escuro =====
+    const MODES = ['auto', 'light', 'dark'];
+    const MODE_NAMES = { auto: 'Automático', light: 'Claro', dark: 'Escuro' };
+    const segBtns = Array.prototype.slice.call(document.querySelectorAll('#theme-seg [role="radio"]'));
+    let mode = load('tbo-theme');
+    if (MODES.indexOf(mode) < 0) mode = 'auto';
+    function applyTheme(persist) {
+        if (mode === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', mode);
+        segBtns.forEach(function (b) {
+            const on = b.dataset.mode === mode;
+            b.setAttribute('aria-checked', String(on));
+            b.tabIndex = on ? 0 : -1;
+        });
+        const surface = getComputedStyle(document.body).getPropertyValue('--surface').trim();
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta && surface) meta.setAttribute('content', surface);
+        if (persist) store('tbo-theme', mode === 'auto' ? null : mode);
+    }
+    function setMode(m, focus) {
+        mode = m; applyTheme(true);
+        if (focus) segBtns.filter(function (b) { return b.dataset.mode === m; })[0].focus();
+    }
+    segBtns.forEach(function (b) {
+        b.addEventListener('click', function () { setMode(b.dataset.mode, false); });
+        b.addEventListener('keydown', function (e) {
+            const d = (e.key === 'ArrowRight' || e.key === 'ArrowDown') ? 1 : (e.key === 'ArrowLeft' || e.key === 'ArrowUp') ? -1 : 0;
+            if (!d) return;
+            e.preventDefault();
+            setMode(MODES[(MODES.indexOf(mode) + d + MODES.length) % MODES.length], true);
+        });
+    });
+    // No modo Automático, acompanha o sistema ao vivo (atualiza a cor da barra do navegador)
+    const onSys = function () { applyTheme(false); };
+    if (mqDark.addEventListener) mqDark.addEventListener('change', onSys); else if (mqDark.addListener) mqDark.addListener(onSys);
+    applyTheme(false);
+
+    // ===== Sidebar recolhível (desktop) e drawer (mobile) =====
     function applyCollapsed(c) {
         shell.classList.toggle('collapsed', c);
         collapseBtn.setAttribute('aria-expanded', String(!c));
@@ -771,40 +881,31 @@ function generateRowHTML(index, stepResult) {
     }
     let collapsed = load('tbo-collapsed') === '1';
     applyCollapsed(collapsed);
-    collapseBtn.addEventListener('click', function () {
-        collapsed = !collapsed;
-        store('tbo-collapsed', collapsed ? '1' : '0');
-        applyCollapsed(collapsed);
-    });
+    function toggleCollapsed() { collapsed = !collapsed; store('tbo-collapsed', collapsed ? '1' : '0'); applyCollapsed(collapsed); }
+    collapseBtn.addEventListener('click', toggleCollapsed);
 
-    // Drawer (mobile)
     function setDrawer(open) {
         shell.classList.toggle('drawer-open', open);
         menuBtn.setAttribute('aria-expanded', String(open));
         menuBtn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
     }
     menuBtn.addEventListener('click', function () { setDrawer(!shell.classList.contains('drawer-open')); });
-    document.getElementById('backdrop').addEventListener('click', function () { setDrawer(false); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setDrawer(false); });
+    $('backdrop').addEventListener('click', function () { setDrawer(false); });
     mq.addEventListener('change', function () { setDrawer(false); });
 
-    var hint = document.getElementById('empty-hint');
-    document.querySelector('.btn-primary').addEventListener('click', function () { hint.style.display = 'none'; });
-
-    // Navegação por seções
+    // ===== Navegação por seções =====
     const items = Array.prototype.slice.call(document.querySelectorAll('.nav-item'));
-    const sections = items.map(function (a) { return document.getElementById(a.dataset.target); });
+    const sections = items.map(function (a) { return $(a.dataset.target); });
     function setActive(id) {
         items.forEach(function (a) {
-            if (a.dataset.target === id) { a.setAttribute('aria-current', 'true'); document.getElementById('crumb-current').textContent = a.textContent.trim(); }
+            if (a.dataset.target === id) { a.setAttribute('aria-current', 'true'); $('crumb-current').textContent = a.textContent.trim(); }
             else a.removeAttribute('aria-current');
         });
     }
     items.forEach(function (a) {
         a.addEventListener('click', function (e) {
             e.preventDefault();
-            const el = document.getElementById(a.dataset.target);
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            $(a.dataset.target).scrollIntoView({ behavior: 'smooth', block: 'start' });
             setActive(a.dataset.target);
             setDrawer(false);
         });
@@ -816,6 +917,220 @@ function generateRowHTML(index, stepResult) {
         else sections.forEach(function (s) { if (s.getBoundingClientRect().top - top <= 80) current = s.id; });
         setActive(current);
     }, { passive: true });
+
+    // ===== Configuração: localStorage + query string =====
+    const CFG = [['v', 'sel-o0', seto0], ['c', 'sel-o4', seto4], ['e', 'sel-o6', seto6],
+                 ['o1', 'sel-o1', seto1], ['o2', 'sel-o2', seto2], ['o3', 'sel-o3', seto3], ['g', 'sel-o5', seto5]];
+    function readCfg() { const o = {}; CFG.forEach(function (c) { o[c[0]] = $(c[1]).value; }); return o; }
+    function applyCfg(o) {
+        CFG.forEach(function (c) {
+            const sel = $(c[1]);
+            if (o && o[c[0]] != null && Array.prototype.some.call(sel.options, function (op) { return op.value === String(o[c[0]]); })) sel.value = String(o[c[0]]);
+        });
+        CFG.forEach(function (c) { c[2]($(c[1]).value); }); // sincroniza o estado do otimizador com os selects
+    }
+    function cfgKey() { return CFG.map(function (c) { return $(c[1]).value; }).join('|'); }
+    function cfgParams() { const p = new URLSearchParams(); const o = readCfg(); CFG.forEach(function (c) { p.set(c[0], o[c[0]]); }); return p; }
+    function syncUrl() { try { history.replaceState(null, '', '?' + cfgParams().toString() + location.hash); } catch (e) {} }
+    function saveCfg() { store('tbo-config', JSON.stringify(readCfg())); }
+    function initialCfg() {
+        let o = null;
+        try {
+            const q = new URLSearchParams(location.search);
+            if (CFG.some(function (c) { return q.has(c[0]); })) { o = {}; CFG.forEach(function (c) { if (q.has(c[0])) o[c[0]] = q.get(c[0]); }); }
+        } catch (e) {}
+        if (!o) { try { o = JSON.parse(load('tbo-config') || 'null'); } catch (e) { o = null; } }
+        return o;
+    }
+    function resetSelects() { CFG.forEach(function (c) { $(c[1]).selectedIndex = 0; }); }
+
+    let genTimer = null;
+    function scheduleGenerate() { clearTimeout(genTimer); genTimer = setTimeout(function () { getOrder(); }, 300); }
+    CFG.forEach(function (c) {
+        $(c[1]).addEventListener('change', function () { saveCfg(); syncUrl(); scheduleGenerate(); });
+    });
+
+    function copyText(text) {
+        function fallback() {
+            const ta = document.createElement('textarea');
+            ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+            document.body.appendChild(ta); ta.select();
+            let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+            return ok ? Promise.resolve() : Promise.reject(new Error('copy'));
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text).catch(fallback);
+        return fallback();
+    }
+    $('btn-link').addEventListener('click', function () {
+        const u = new URL(location.href); u.search = cfgParams().toString(); u.hash = '';
+        copyText(u.toString()).then(function () { toast('Link copiado para a área de transferência.'); },
+                                    function () { toast('Não foi possível copiar o link.'); });
+    });
+    $('btn-reset').addEventListener('click', function () {
+        resetSelects(); applyCfg(null);
+        store('tbo-config', null);
+        try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
+        toast('Configuração restaurada para o padrão.');
+        getOrder();
+    });
+
+    // ===== Resultado: resumo, filtro, concluídas, exportação =====
+    const demo = $('demo');
+    const hint = $('empty-hint');
+    let rows = [];     // dados lidos da tabela gerada
+    let done = {};     // índices concluídos (chave = nº do passo)
+    let doneKey = '';
+
+    function num(s) { return parseInt(String(s).replace(/\D/g, ''), 10) || 0; }
+    function parseTable() {
+        rows = [];
+        demo.querySelectorAll('tbody tr:not(.row-total)').forEach(function (tr) {
+            const c = tr.children;
+            rows.push({
+                n: c[0].textContent.trim(),
+                b: c[1].textContent.replace(/\s+/g, ' ').trim().split(',').map(function (x) { return x.trim(); }),
+                f: c[2].textContent.trim(),
+                p: String(num(c[3].textContent)),
+                a: c[4].textContent.trim().replace(/^[^\p{L}\p{N}]+/u, ''),
+                roi: c[5].textContent.trim().replace('.', ','),
+                cost: String(num(c[6].textContent))
+            });
+        });
+    }
+    const HEAD = ['#', 'Moinho', 'Padaria', 'Mansão', 'Aqueduto', 'Campos', 'Produção/h', 'Próxima ação', 'ROI (dias)', 'Celeiro mínimo'];
+    function rowCells(r) { return [r.n].concat(r.b, [r.f, r.p, r.a, r.roi, r.cost]); }
+    function buildText(sep, quote) {
+        const q = quote ? function (v) { v = String(v); return /[;"\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; } : function (v) { return String(v); };
+        return [HEAD].concat(rows.map(rowCells)).map(function (r) { return r.map(q).join(sep); });
+    }
+    function formatN(n) { return n.toLocaleString('pt-BR'); }
+
+    function updateSummary() {
+        const total = demo.querySelector('tbody tr.row-total');
+        if (!total) return;
+        const fin = num(total.children[4].textContent);
+        const start = Math.round(field.values[0] * o0 * gold); // produção com todos os campos no nível 0
+        $('st-steps').textContent = formatN(rows.length);
+        $('st-prod').textContent = formatN(fin);
+        $('st-gain').textContent = '+' + formatN(fin - start) + '/h';
+        $('st-gain-sub').textContent = 'de ' + formatN(start) + '/h para ' + formatN(fin) + '/h' + (start ? ' (×' + (fin / start).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ')' : '');
+    }
+    function updateProgress() {
+        const trs = demo.querySelectorAll('tbody tr:not(.row-total)');
+        let n = 0, next = null;
+        trs.forEach(function (tr) {
+            const d = !!done[tr.dataset.step];
+            tr.classList.remove('next');
+            tr.classList.toggle('done', d);
+            tr.querySelector('input.chk').checked = d;
+            if (d) n++; else if (!next) next = tr;
+        });
+        if (next) next.classList.add('next');
+        const pct = trs.length ? Math.round(100 * n / trs.length) : 0;
+        const bar = $('prog-bar');
+        bar.setAttribute('aria-valuemax', String(trs.length));
+        bar.setAttribute('aria-valuenow', String(n));
+        bar.setAttribute('aria-valuetext', n + ' de ' + trs.length + ' passos concluídos');
+        bar.firstElementChild.style.width = pct + '%';
+        $('prog-text').textContent = n + ' de ' + trs.length + ' concluídos (' + pct + '%)';
+        $('btn-clear').disabled = n === 0;
+    }
+    function saveDone() { store(doneKey, JSON.stringify(Object.keys(done))); }
+    function applyFilter() {
+        const q = $('filter').value.trim().toLowerCase();
+        let shown = 0, total = 0;
+        demo.querySelectorAll('tbody tr:not(.row-total)').forEach(function (tr) {
+            total++;
+            const ok = !q || tr.textContent.toLowerCase().indexOf(q) >= 0;
+            tr.hidden = !ok; if (ok) shown++;
+        });
+        $('filter-count').textContent = q ? ('Mostrando ' + shown + ' de ' + total) : '';
+    }
+
+    function enhance() {
+        if (!demo.querySelector('table')) return;
+        hint.style.display = 'none';
+        parseTable();
+        // coluna de concluídas
+        const hr = demo.querySelector('thead tr');
+        const th = document.createElement('th'); th.className = 'c-chk'; th.title = 'Concluída'; th.innerHTML = '<span aria-hidden="true">✓</span><span class="sr-only">Concluída</span>';
+        hr.insertBefore(th, hr.firstChild);
+        demo.querySelectorAll('tbody tr').forEach(function (tr) {
+            const td = document.createElement('td'); td.className = 'c-chk';
+            if (tr.classList.contains('row-total')) td.innerHTML = '';
+            else {
+                const step = tr.children[0].textContent.trim();
+                tr.dataset.step = step;
+                td.innerHTML = '<input type="checkbox" class="chk" aria-label="Marcar passo ' + step + ' como concluído">';
+            }
+            tr.insertBefore(td, tr.firstChild);
+        });
+        const tot = demo.querySelector('tr.row-total td:last-child'); if (tot) tot.colSpan = 3;
+        doneKey = 'tbo-done:' + cfgKey();
+        done = {};
+        try { (JSON.parse(load(doneKey) || '[]') || []).forEach(function (k) { done[k] = true; }); } catch (e) {}
+        $('summary').classList.remove('hidden');
+        $('toolbar').classList.remove('hidden');
+        updateSummary(); updateProgress(); applyFilter();
+    }
+    new MutationObserver(function () { enhance(); }).observe(demo, { childList: true });
+
+    demo.addEventListener('change', function (e) {
+        const t = e.target;
+        if (!t.classList || !t.classList.contains('chk')) return;
+        const step = t.closest('tr').dataset.step;
+        if (t.checked) done[step] = true; else delete done[step];
+        saveDone(); updateProgress();
+    });
+    demo.addEventListener('click', function (e) {
+        const td = e.target.closest && e.target.closest('td.c-chk');
+        if (td && e.target.tagName !== 'INPUT') { const i = td.querySelector('input.chk'); if (i) { i.checked = !i.checked; i.dispatchEvent(new Event('change', { bubbles: true })); } }
+    });
+    $('btn-clear').addEventListener('click', function () { done = {}; saveDone(); updateProgress(); toast('Marcações limpas.'); });
+    $('filter').addEventListener('input', applyFilter);
+
+    $('btn-copy').addEventListener('click', function () {
+        if (!rows.length) return;
+        copyText(buildText('\t', false).join('\n')).then(function () { toast('Fila copiada (' + rows.length + ' passos).'); },
+                                                      function () { toast('Não foi possível copiar a fila.'); });
+    });
+    $('btn-csv').addEventListener('click', function () {
+        if (!rows.length) return;
+        const csv = '﻿' + buildText(';', true).join('\r\n') + '\r\n';
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'fila-travian.csv';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        toast('CSV baixado.');
+    });
+
+    // ===== Atalhos de teclado =====
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { setDrawer(false); return; }
+        if (e.defaultPrevented) return;
+        const t = e.target, tag = t.tagName;
+        if (/^(INPUT|SELECT|TEXTAREA)$/.test(tag) || t.isContentEditable) return;
+        if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); getOrder(); return; }
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key === 'Enter') {
+            if (/^(BUTTON|A)$/.test(tag)) return; // Enter já ativa o controle focado
+            e.preventDefault(); getOrder();
+        } else if (e.key === 't' || e.key === 'T') {
+            setMode(MODES[(MODES.indexOf(mode) + 1) % MODES.length], false);
+            toast('Tema: ' + MODE_NAMES[mode]);
+        } else if (e.key === '[') {
+            if (mq.matches) setDrawer(!shell.classList.contains('drawer-open')); else toggleCollapsed();
+        }
+    });
+
+    // ===== Início =====
+    resetSelects();
+    applyCfg(initialCfg());
+    syncUrl();
+    getOrder();
 })();
 </script>
 </body>

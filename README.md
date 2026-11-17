@@ -27,6 +27,13 @@
   </p>
 </div>
 
+<p align="center">
+  <a href="https://voaneves.github.io/travian-building-order/"><img src="docs/img/travian-desktop.png" alt="Otimizador de Capital do Travian no desktop: formulário de configuração da aldeia, bônus de oásis e premium, resumo com 136 passos e produção final de 48.038 de cereal por hora, e a fila de construção" width="720"></a>
+  <a href="https://voaneves.github.io/travian-building-order/"><img src="docs/img/travian-mobile.png" alt="Otimizador de Capital do Travian no celular, com o formulário de configuração da aldeia" width="200"></a>
+  <br />
+  <a href="https://voaneves.github.io/travian-building-order/"><strong>Experimente a demo ao vivo »</strong></a>
+</p>
+
 <details>
   <summary>Tabela de Conteúdos</summary>
   <ol>

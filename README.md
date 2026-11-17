@@ -54,7 +54,7 @@ Você já parou para pensar em quanto tempo e recursos desperdiça tentando adiv
 Este projeto nasceu para resolver exatamente essa dor de cabeça. O **Travian Building Order** é um otimizador de capital focado em calcular a fila de construção perfeita para maximizar sua produção de cereal. Ele tira o "achismo" do seu jogo e coloca a lógica matemática para trabalhar a seu favor. 🚀
 
 Pontos-chave para prestar atenção:
-- **Interface Intuitiva:** Design escaneável com Glassmorphism e Tailwind, focando no que importa.
+- **Interface Intuitiva:** Casco de aplicação (sidebar recolhível, barra superior, tema claro/escuro) e conteúdo fluido que se adapta do celular ao monitor ultrawide.
 - **Configuração Personalizada:** Suporta oásis, bônus premium e até o Aqueduto dos Egípcios.
 - **Retorno sobre Investimento (ROI):** O algoritmo foca em entregar o menor tempo de retorno para cada ação.
 - **Ação Direta:** Fornece não apenas os níveis, mas a exigência mínima de Celeiro para a próxima obra.
@@ -66,7 +66,7 @@ Pontos-chave para prestar atenção:
 Para garantir fluidez sem burocracias, utilizamos tecnologias diretas e executáveis no lado do cliente:
 
 - **HTML5 & Vanilla JavaScript:** Lógica de cálculo robusta sem necessidade de frameworks pesados.
-- **Tailwind CSS (via CDN):** Para uma estilização rápida, moderna e responsiva.
+- **CSS próprio:** Layout responsivo com CSS Grid e variáveis CSS (tema claro/escuro), sem frameworks nem build.
 - **Inter Font:** Tipografia focada em legibilidade e clareza dos dados.
 
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>

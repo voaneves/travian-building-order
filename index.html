@@ -3,140 +3,441 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BE%3C/text%3E%3C/svg%3E">
     <title>Travian: Otimizador de Crop & Infraestrutura</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @media print { .no-print { display: none !important; } }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f0fdf4; /* Um verde muito sutil, remetendo a crop */
-            background-image: radial-gradient(#dcfce7 1px, transparent 1px);
-            background-size: 20px 20px;
+        :root {
+            --bg: #f6f8f7;
+            --surface: #ffffff;
+            --surface-2: #f1f5f3;
+            --border: #d9e1dd;
+            --text: #14201b;
+            --text-2: #4a5a53;
+            --primary: #047857;
+            --primary-hover: #065f46;
+            --on-primary: #ffffff;
+            --primary-soft: #e3f4ec;
+            --focus: #047857;
+            --gold-bg: #fef6e0;
+            --gold-text: #7a4a05;
+            --gold-border: #f0d9a0;
+            --chip-crop-bg: #dcf3e6;   --chip-crop-fg: #065f46;
+            --chip-mill-bg: #dfeafe;   --chip-mill-fg: #1e40af;
+            --chip-bake-bg: #ffe8d2;   --chip-bake-fg: #9a3412;
+            --chip-hm-bg: #ede4fd;     --chip-hm-fg: #5b21b6;
+            --chip-ww-bg: #d9f2f7;     --chip-ww-fg: #0e5f73;
+            --num-mill: #1d4ed8; --num-bake: #c2410c; --num-hm: #6d28d9; --num-ww: #0e7490;
+            --shadow: 0 1px 2px rgba(16, 32, 26, .06);
+            --backdrop: rgba(10, 20, 16, .5);
+            --sidebar-w: 248px;
+            --sidebar-w-collapsed: 64px;
+            --appbar-h: 56px;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        :root[data-theme="dark"] {
+            --bg: #0e1512;
+            --surface: #151e1a;
+            --surface-2: #1b2622;
+            --border: #2b3a34;
+            --text: #e6efeb;
+            --text-2: #a4b5ad;
+            --primary: #34d399;
+            --primary-hover: #6ee7b7;
+            --on-primary: #05261b;
+            --primary-soft: #14352a;
+            --focus: #6ee7b7;
+            --gold-bg: #2a2210;
+            --gold-text: #f3d48a;
+            --gold-border: #4a3b17;
+            --chip-crop-bg: #14352a;   --chip-crop-fg: #7ee8bb;
+            --chip-mill-bg: #1a2a52;   --chip-mill-fg: #a9c3ff;
+            --chip-bake-bg: #43230f;   --chip-bake-fg: #ffbf8f;
+            --chip-hm-bg: #2e2152;     --chip-hm-fg: #cdb8ff;
+            --chip-ww-bg: #0f3440;     --chip-ww-fg: #8fdcee;
+            --num-mill: #8fb0ff; --num-bake: #ffa56b; --num-hm: #bfa4ff; --num-ww: #6fd3ea;
+            --shadow: none;
+            --backdrop: rgba(0, 0, 0, .6);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #0e1512;
+                --surface: #151e1a;
+                --surface-2: #1b2622;
+                --border: #2b3a34;
+                --text: #e6efeb;
+                --text-2: #a4b5ad;
+                --primary: #34d399;
+                --primary-hover: #6ee7b7;
+                --on-primary: #05261b;
+                --primary-soft: #14352a;
+                --focus: #6ee7b7;
+                --gold-bg: #2a2210;
+                --gold-text: #f3d48a;
+                --gold-border: #4a3b17;
+                --chip-crop-bg: #14352a;   --chip-crop-fg: #7ee8bb;
+                --chip-mill-bg: #1a2a52;   --chip-mill-fg: #a9c3ff;
+                --chip-bake-bg: #43230f;   --chip-bake-fg: #ffbf8f;
+                --chip-hm-bg: #2e2152;     --chip-hm-fg: #cdb8ff;
+                --chip-ww-bg: #0f3440;     --chip-ww-fg: #8fdcee;
+                --num-mill: #8fb0ff; --num-bake: #ffa56b; --num-hm: #bfa4ff; --num-ww: #6fd3ea;
+                --shadow: none;
+                --backdrop: rgba(0, 0, 0, .6);
+            }
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .hidden { display: none; }
+        :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+        button { font: inherit; color: inherit; }
+
+        /* ===== Casco ===== */
+        .shell { display: flex; height: 100vh; height: 100dvh; width: 100%; overflow: hidden; }
+
+        .sidebar {
+            flex: 0 0 var(--sidebar-w);
+            width: var(--sidebar-w);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            transition: width .2s ease, flex-basis .2s ease, transform .2s ease;
+            overflow: hidden;
+            z-index: 40;
+        }
+        .brand {
+            height: var(--appbar-h);
+            display: flex; align-items: center; gap: 12px;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700; font-size: 15px; white-space: nowrap;
+            flex: none;
+        }
+        .brand-icon { font-size: 22px; line-height: 1; flex: none; width: 24px; text-align: center; }
+        .nav { padding: 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            min-height: 44px; padding: 0 14px;
+            border: 0; background: transparent; border-radius: 8px;
+            color: var(--text-2); text-decoration: none; cursor: pointer;
+            font-weight: 500; white-space: nowrap; text-align: left; width: 100%;
+        }
+        .nav-item:hover { background: var(--surface-2); color: var(--text); }
+        .nav-item[aria-current="true"] { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+        .nav-icon { flex: none; width: 24px; text-align: center; font-size: 18px; line-height: 1; }
+        .sidebar-foot { padding: 12px 20px; border-top: 1px solid var(--border); color: var(--text-2); font-size: 12px; white-space: nowrap; }
+
+        .shell.collapsed .sidebar { flex-basis: var(--sidebar-w-collapsed); width: var(--sidebar-w-collapsed); }
+        .shell.collapsed .brand { padding: 0 20px; }
+        .shell.collapsed .brand-text,
+        .shell.collapsed .nav-label,
+        .shell.collapsed .sidebar-foot { display: none; }
+
+        .backdrop { display: none; }
+
+        .main-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .appbar {
+            height: var(--appbar-h); flex: none;
+            display: flex; align-items: center; gap: 8px;
+            padding: 0 16px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+        .icon-btn {
+            width: 40px; height: 40px; flex: none;
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 1px solid transparent; background: transparent; border-radius: 8px;
+            cursor: pointer; color: var(--text-2);
+        }
+        .icon-btn:hover { background: var(--surface-2); color: var(--text); }
+        .icon-btn svg { width: 20px; height: 20px; }
+        .crumbs { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; }
+        .crumbs .sep { color: var(--text-2); }
+        .crumbs .crumb-root { color: var(--text-2); }
+        .crumbs .crumb-current { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+        .theme-btn { width: auto; padding: 0 12px; gap: 8px; border-color: var(--border); font-size: 13px; font-weight: 500; }
+        .only-menu { display: none; }
+
+        .content { flex: 1; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+        .page { width: 100%; padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+
+        .page-head h1 { margin: 0; font-size: 24px; line-height: 1.25; letter-spacing: -.01em; }
+        .page-head p { margin: 4px 0 0; color: var(--text-2); }
+
+        .section-title { margin: 0 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); }
+
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; }
+        .card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+            padding: 16px; box-shadow: var(--shadow); min-width: 0;
+        }
+        .card h2 { margin: 0 0 16px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .card.gold { background: var(--gold-bg); border-color: var(--gold-border); }
+        .card.gold h2, .card.gold label { color: var(--gold-text); }
+        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+        .field:last-child { margin-bottom: 0; }
+        .field label { font-size: 13px; font-weight: 500; color: var(--text-2); }
+        select {
+            width: 100%; min-height: 40px; padding: 0 12px;
+            font: inherit; color: var(--text);
+            background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+        }
+        select:hover { border-color: var(--text-2); }
+        select:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--focus); }
+
+        .btn-primary {
+            width: 100%; min-height: 44px; margin-top: 16px; padding: 0 20px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            background: var(--primary); color: var(--on-primary);
+            border: 0; border-radius: 8px; font-weight: 600; cursor: pointer;
+        }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary svg { width: 18px; height: 18px; }
+
+        .status { display: flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 500; }
+        .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty { color: var(--text-2); }
+
+        /* ===== Tabela de resultado ===== */
+        .table-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+            overflow: auto; max-width: 100%; max-height: 70vh; box-shadow: var(--shadow);
+        }
+        .table-card table { width: 100%; min-width: 760px; border-collapse: separate; border-spacing: 0; text-align: left; }
+        .table-card th, .table-card td { padding: 10px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .table-card thead th {
+            position: sticky; top: 0; z-index: 1;
+            background: var(--surface-2); color: var(--text-2);
+            font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap;
+        }
+        .th-sub { display: block; font-size: 10px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+        .table-card tbody tr:nth-child(even):not(.row-total) { background: var(--surface-2); }
+        .table-card tbody tr:hover:not(.row-total) { background: var(--primary-soft); }
+        .table-card tbody tr:last-child td { border-bottom: 0; }
+        .c-center { text-align: center; }
+        .c-num { text-align: right; font-variant-numeric: tabular-nums; }
+        .c-idx { text-align: center; color: var(--text-2); width: 48px; font-variant-numeric: tabular-nums; }
+        .c-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: var(--text-2); word-break: break-all; min-width: 200px; }
+        .c-prod { font-weight: 700; color: var(--primary); }
+        .c-cost { font-weight: 700; color: var(--gold-text); background: var(--gold-bg); border-left: 1px solid var(--gold-border); white-space: nowrap; }
+        .c-nowrap { white-space: nowrap; }
+        .n-mill { color: var(--num-mill); } .n-bake { color: var(--num-bake); } .n-hm { color: var(--num-hm); } .n-ww { color: var(--num-ww); }
+        .row-total td { background: var(--primary-soft); border-top: 2px solid var(--primary); font-weight: 700; color: var(--primary); }
+        .row-total .c-prod { font-size: 15px; }
+
+        .chip {
+            display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px;
+            font-size: 12px; font-weight: 600; white-space: nowrap; border: 1px solid transparent;
+        }
+        .chip-crop { background: var(--chip-crop-bg); color: var(--chip-crop-fg); }
+        .chip-mill { background: var(--chip-mill-bg); color: var(--chip-mill-fg); }
+        .chip-bake { background: var(--chip-bake-bg); color: var(--chip-bake-fg); }
+        .chip-hm { background: var(--chip-hm-bg); color: var(--chip-hm-fg); }
+        .chip-ww { background: var(--chip-ww-bg); color: var(--chip-ww-fg); }
+
+        .about p { margin: 0 0 8px; color: var(--text-2); max-width: 70ch; }
+        .about p:last-child { margin-bottom: 0; }
+        .about a { color: var(--primary); }
+
+        /* ===== Telas estreitas: drawer ===== */
+        @media (max-width: 767.98px) {
+            .page { padding: 16px; }
+            .sidebar {
+                position: fixed; top: 0; bottom: 0; left: 0;
+                width: min(280px, 85vw); flex-basis: auto;
+                transform: translateX(-100%);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+            }
+            .shell.collapsed .sidebar { width: min(280px, 85vw); flex-basis: auto; }
+            .shell.collapsed .brand-text,
+            .shell.collapsed .nav-label,
+            .shell.collapsed .sidebar-foot { display: revert; }
+            .shell.drawer-open .sidebar { transform: translateX(0); }
+            .shell.drawer-open .backdrop { display: block; position: fixed; inset: 0; background: var(--backdrop); z-index: 30; }
+            .only-menu { display: inline-flex; }
+            .only-desktop { display: none; }
+            .theme-btn .theme-label { display: none; }
+            .theme-btn { width: 40px; padding: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+        }
+
+        @media print {
+            .sidebar, .appbar, .backdrop, .no-print, #status { display: none !important; }
+            html, body, .shell, .main-col, .content { height: auto !important; overflow: visible !important; display: block; }
+            body { background: #fff; color: #000; }
+            .page { padding: 0; }
+            .table-card { max-height: none; overflow: visible; border: 0; box-shadow: none; }
+            .table-card thead th { position: static; }
         }
     </style>
 </head>
-<body class="text-slate-800 p-4 md:p-8 min-h-screen flex items-start justify-center">
+<body>
 
-<div class="max-w-6xl w-full glass-card rounded-2xl overflow-hidden border border-emerald-100">
-    
-    <!-- Cabeçalho -->
-    <div class="bg-gradient-to-r from-emerald-600 to-teal-700 p-6 md:p-8 text-white shadow-inner">
-        <div class="flex items-center gap-3">
-            <span class="text-4xl">🌾</span>
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight">Otimizador de Capital</h1>
-                <p class="text-emerald-100 mt-1 font-medium">Calcule a fila de construção perfeita para maximizar sua produção.</p>
-            </div>
+<div class="shell" id="shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="Barra lateral">
+        <div class="brand">
+            <span class="brand-icon" aria-hidden="true">🌾</span>
+            <span class="brand-text">Travian Optimizer</span>
         </div>
-    </div>
+        <nav class="nav" aria-label="Navegação principal">
+            <a class="nav-item" href="#sec-config" data-target="sec-config" title="Configuração" aria-current="true">
+                <span class="nav-icon" aria-hidden="true">⚙️</span><span class="nav-label">Configuração</span>
+            </a>
+            <a class="nav-item" href="#sec-fila" data-target="sec-fila" title="Fila de construção">
+                <span class="nav-icon" aria-hidden="true">📋</span><span class="nav-label">Fila de construção</span>
+            </a>
+            <a class="nav-item" href="#sec-sobre" data-target="sec-sobre" title="Sobre">
+                <span class="nav-icon" aria-hidden="true">ℹ️</span><span class="nav-label">Sobre</span>
+            </a>
+        </nav>
+        <div class="sidebar-foot">Fila ótima de crop</div>
+    </aside>
+    <div class="backdrop" id="backdrop" aria-hidden="true"></div>
 
-    <div class="p-6 md:p-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 no-print">
-            
-            <!-- Grupo 1: Configurações Básicas -->
-            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span>⚙️</span> Configuração da Aldeia
-                </h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Tipo de Aldeia</label>
-                        <select id="sel-o0" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-sm" onchange="seto0(this.value)">
-                            <option value="6">6 Campos (Normal)</option>
-                            <option value="7">7 Campos</option>
-                            <option value="9">9 Campos</option>
-                            <option value="15">15 Campos (Crop)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">É a Capital?</label>
-                        <select id="sel-o4" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-sm" onchange="seto4(this.value)">
-                            <option value="0">Sim</option>
-                            <option value="1">Não</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Tribo Egípcia?</label>
-                        <select id="sel-o6" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-sm" onchange="seto6(this.value)">
-                            <option value="0">Não</option>
-                            <option value="1">Sim (Aqueduto)</option>
-                        </select>
-                    </div>
+    <div class="main-col">
+        <!-- Barra superior -->
+        <header class="appbar no-print">
+            <button type="button" class="icon-btn only-menu" id="menu-btn" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <button type="button" class="icon-btn only-desktop" id="collapse-btn" aria-label="Recolher menu lateral" aria-controls="sidebar" aria-expanded="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16"/></svg>
+            </button>
+            <div class="crumbs" aria-label="Você está em">
+                <span class="crumb-root">Otimizador</span>
+                <span class="sep" aria-hidden="true">/</span>
+                <span class="crumb-current" id="crumb-current">Configuração</span>
+            </div>
+            <button type="button" class="icon-btn theme-btn" id="theme-btn" aria-label="Tema: sistema. Clique para alternar">
+                <span id="theme-icon" aria-hidden="true">🖥️</span><span class="theme-label" id="theme-label">Sistema</span>
+            </button>
+        </header>
+
+        <!-- Conteúdo -->
+        <main class="content" id="content" tabindex="-1">
+            <div class="page">
+                <div class="page-head no-print">
+                    <h1>Otimizador de Capital</h1>
+                    <p>Calcule a fila de construção perfeita para maximizar sua produção.</p>
                 </div>
-            </div>
 
-            <!-- Grupo 2: Oásis -->
-            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span>🌴</span> Bônus de Oásis
-                </h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Oásis 1 (Maior %)</label>
-                        <select id="sel-o1" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-sm" onchange="seto1(this.value)">
-                            <option value="0">Nenhum</option>
-                            <option value=".25">+ 25%</option>
-                            <option value=".50">+ 50%</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Oásis 2</label>
-                        <select id="sel-o2" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-sm" onchange="seto2(this.value)">
-                            <option value="0">Nenhum</option>
-                            <option value=".25">+ 25%</option>
-                            <option value=".50">+ 50%</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Oásis 3</label>
-                        <select id="sel-o3" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-sm" onchange="seto3(this.value)">
-                            <option value="0">Nenhum</option>
-                            <option value=".25">+ 25%</option>
-                            <option value=".50">+ 50%</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+                <section id="sec-config" class="no-print" aria-labelledby="t-config">
+                    <h2 class="section-title" id="t-config">Configuração</h2>
+                    <div class="cards">
 
-            <!-- Grupo 3: Premium -->
-            <div class="bg-amber-50 p-5 rounded-xl border border-amber-200">
-                <h2 class="text-sm font-bold text-amber-700 uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span>👑</span> Bônus Premium
-                </h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-amber-900 mb-1">Bônus de Ouro (+25%)</label>
-                        <select id="sel-o5" class="w-full p-2.5 border border-amber-300 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all text-sm" onchange="seto5(this.value)">
-                            <option value="1.25">Ativado</option>
-                            <option value="1">Desativado</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Botão de Ação -->
-                    <div class="pt-4 mt-auto">
-                        <button type="button" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transform transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 flex justify-center items-center gap-2" onclick="getOrder()">
-                            <span>Gerar Fila Perfeita</span>
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <!-- Grupo 1: Configurações Básicas -->
+                        <div class="card">
+                            <h2><span aria-hidden="true">⚙️</span> Configuração da Aldeia</h2>
+                            <div class="field">
+                                <label for="sel-o0">Tipo de Aldeia</label>
+                                <select id="sel-o0" onchange="seto0(this.value)">
+                                    <option value="6">6 Campos (Normal)</option>
+                                    <option value="7">7 Campos</option>
+                                    <option value="9">9 Campos</option>
+                                    <option value="15">15 Campos (Crop)</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="sel-o4">É a Capital?</label>
+                                <select id="sel-o4" onchange="seto4(this.value)">
+                                    <option value="0">Sim</option>
+                                    <option value="1">Não</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="sel-o6">Tribo Egípcia?</label>
+                                <select id="sel-o6" onchange="seto6(this.value)">
+                                    <option value="0">Não</option>
+                                    <option value="1">Sim (Aqueduto)</option>
+                                </select>
+                            </div>
+                        </div>
 
-        <div id="status" class="text-sm font-medium text-emerald-600 mb-3 hidden flex items-center gap-2">
-            <svg class="animate-spin h-4 w-4 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            Processando os melhores cenários...
-        </div>
-        
-        <div id="demo" class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm hidden">
-            <!-- A tabela será gerada aqui -->
-        </div>
+                        <!-- Grupo 2: Oásis -->
+                        <div class="card">
+                            <h2><span aria-hidden="true">🌴</span> Bônus de Oásis</h2>
+                            <div class="field">
+                                <label for="sel-o1">Oásis 1 (Maior %)</label>
+                                <select id="sel-o1" onchange="seto1(this.value)">
+                                    <option value="0">Nenhum</option>
+                                    <option value=".25">+ 25%</option>
+                                    <option value=".50">+ 50%</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="sel-o2">Oásis 2</label>
+                                <select id="sel-o2" onchange="seto2(this.value)">
+                                    <option value="0">Nenhum</option>
+                                    <option value=".25">+ 25%</option>
+                                    <option value=".50">+ 50%</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="sel-o3">Oásis 3</label>
+                                <select id="sel-o3" onchange="seto3(this.value)">
+                                    <option value="0">Nenhum</option>
+                                    <option value=".25">+ 25%</option>
+                                    <option value=".50">+ 50%</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Grupo 3: Premium -->
+                        <div class="card gold">
+                            <h2><span aria-hidden="true">👑</span> Bônus Premium</h2>
+                            <div class="field">
+                                <label for="sel-o5">Bônus de Ouro (+25%)</label>
+                                <select id="sel-o5" onchange="seto5(this.value)">
+                                    <option value="1.25">Ativado</option>
+                                    <option value="1">Desativado</option>
+                                </select>
+                            </div>
+                            <!-- Botão de Ação -->
+                            <button type="button" class="btn-primary" onclick="getOrder()">
+                                <span>Gerar Fila Perfeita</span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="sec-fila" aria-labelledby="t-fila">
+                    <h2 class="section-title no-print" id="t-fila">Fila de construção</h2>
+                    <div id="status" class="status hidden" role="status" aria-live="polite">
+                        <span class="spinner" aria-hidden="true"></span>
+                        Processando os melhores cenários...
+                    </div>
+                    <p class="empty no-print" id="empty-hint">Ajuste a configuração e clique em “Gerar Fila Perfeita”.</p>
+                    <div id="demo" class="table-card hidden">
+                        <!-- A tabela será gerada aqui -->
+                    </div>
+                </section>
+
+                <section id="sec-sobre" class="card about no-print" aria-labelledby="t-sobre">
+                    <h2 id="t-sobre">Sobre</h2>
+                    <p>Otimizador de capital para Travian: calcula a ordem de construção que dá o menor tempo de retorno (ROI) para cada ação, considerando oásis, bônus de ouro e o Aqueduto dos egípcios.</p>
+                    <p>Código aberto em <a href="https://github.com/voaneves/travian-building-order" target="_blank" rel="noopener">github.com/voaneves/travian-building-order</a>.</p>
+                </section>
+            </div>
+        </main>
     </div>
 </div>
 
@@ -298,40 +599,40 @@ function getNextStep() {
         if (cap === 1 && field.lowest() === 10) return null;
         let lvl = field.uplowest();
         costOfAction = field.costs[lvl];
-        actionText = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm">🌾 Upar Crop (Nv. ${lvl})</span>`;
+        actionText = `<span class="chip chip-crop">🌾 Upar Crop (Nv. ${lvl})</span>`;
     }
     else if (lowest === 1) {
         if (cap === 1 && field.lowest() === 10) return null;
         field.uphighest();
         costOfAction = field.costs[field.fields[0]];
-        actionText = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm">🌾 Upar Crop (Nv. ${field.fields[0]})</span>`;
+        actionText = `<span class="chip chip-crop">🌾 Upar Crop (Nv. ${field.fields[0]})</span>`;
     }
     else if (lowest === 2) {
         mill++;
         costOfAction = costs.m[mill];
-        actionText = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200 shadow-sm">⚙️ Moinho (Nv. ${mill})</span>`;
+        actionText = `<span class="chip chip-mill">⚙️ Moinho (Nv. ${mill})</span>`;
     }
     else if (lowest === 3) {
         bake++;
         costOfAction = costs.b[bake];
-        actionText = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 border border-orange-200 shadow-sm">🍞 Padaria (Nv. ${bake})</span>`;
+        actionText = `<span class="chip chip-bake">🍞 Padaria (Nv. ${bake})</span>`;
     }
     else if (lowest === 41) {
         o1p = 1; hm = 10; costOfAction = costs.hm[1];
-        actionText = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200 shadow-sm">⚔️ Mansão (Nv. 10) + Oásis 1</span>`;
+        actionText = `<span class="chip chip-hm">⚔️ Mansão (Nv. 10) + Oásis 1</span>`;
     }
     else if (lowest === 42) {
         o2p = 1; hm = 15; costOfAction = costs.hm[2];
-        actionText = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200 shadow-sm">⚔️ Mansão (Nv. 15) + Oásis 2</span>`;
+        actionText = `<span class="chip chip-hm">⚔️ Mansão (Nv. 15) + Oásis 2</span>`;
     }
     else if (lowest === 43) {
         o3p = 1; hm = 20; costOfAction = costs.hm[3];
-        actionText = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200 shadow-sm">⚔️ Mansão (Nv. 20) + Oásis 3</span>`;
+        actionText = `<span class="chip chip-hm">⚔️ Mansão (Nv. 20) + Oásis 3</span>`;
     }
     else if (lowest === 5) {
         waterwork++;
         costOfAction = costs.ww[waterwork];
-        actionText = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-800 border border-cyan-200 shadow-sm">💧 Aqueduto (Nv. ${waterwork})</span>`;
+        actionText = `<span class="chip chip-ww">💧 Aqueduto (Nv. ${waterwork})</span>`;
     }
 
     let roiDays = Math.round(efflowest / gold / .24) / 100;
@@ -355,23 +656,23 @@ function getOrder() {
         reset();
         
         let html = `
-            <table class="min-w-full text-left bg-white">
-                <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-bold tracking-wider border-b border-slate-200">
+            <table>
+                <thead>
                     <tr>
-                        <th class="py-4 px-5 text-center w-12 text-slate-400">#</th>
-                        <th class="py-4 px-5">Edifícios <span class="text-[10px] text-slate-400 normal-case block font-normal">(Moinho, Padaria, Mansão, Aqueduto)</span></th>
-                        <th class="py-4 px-5">Campos <span class="text-[10px] text-slate-400 normal-case block font-normal">(Níveis)</span></th>
-                        <th class="py-4 px-5 text-center">Produção/h</th>
-                        <th class="py-4 px-5">Próxima Ação</th>
-                        <th class="py-4 px-5 text-center">ROI <span class="text-[10px] text-slate-400 normal-case block font-normal">(Dias)</span></th>
-                        <th class="py-4 px-5 text-right bg-amber-50 text-amber-800 border-l border-amber-100" title="Capacidade máxima que você precisa ter no Armazém/Celeiro antes de iniciar a construção">
+                        <th class="c-idx">#</th>
+                        <th>Edifícios <span class="th-sub">(Moinho, Padaria, Mansão, Aqueduto)</span></th>
+                        <th>Campos <span class="th-sub">(Níveis)</span></th>
+                        <th class="c-num">Produção/h</th>
+                        <th>Próxima Ação</th>
+                        <th class="c-num">ROI <span class="th-sub">(Dias)</span></th>
+                        <th class="c-num" title="Capacidade máxima que você precisa ter no Armazém/Celeiro antes de iniciar a construção">
                             📦 Celeiro Mínimo
                         </th>
                     </tr>
                 </thead>
-                <tbody class="text-sm divide-y divide-slate-100">
+                <tbody>
         `;
-        
+
         let i = 0;
         let stepResult;
         
@@ -394,16 +695,16 @@ function getOrder() {
         }
         
         html += `
-                <tr class="bg-emerald-50 border-t-2 border-emerald-200">
-                    <td class="py-4 px-5 text-center font-bold text-emerald-600">🎯</td>
-                    <td class="py-4 px-5 font-bold text-emerald-700">[${mill}, ${bake}, ${hm}, ${waterwork}]</td>
-                    <td class="py-4 px-5 font-mono text-xs font-bold text-emerald-700 break-all">[${field.fields.join(', ')}]</td>
-                    <td class="py-4 px-5 text-center font-black text-emerald-600 text-base">${formatNumber(Math.round(totalprod() * gold))}</td>
-                    <td class="py-4 px-5 font-bold text-emerald-700" colspan="3">Fila de Construção Concluída com Sucesso!</td>
+                <tr class="row-total">
+                    <td class="c-idx">🎯</td>
+                    <td class="c-nowrap">[${mill}, ${bake}, ${hm}, ${waterwork}]</td>
+                    <td class="c-mono">[${field.fields.join(', ')}]</td>
+                    <td class="c-num c-prod">${formatNumber(Math.round(totalprod() * gold))}</td>
+                    <td colspan="3">Fila de Construção Concluída com Sucesso!</td>
                 </tr>
             </tbody></table>
         `;
-        
+
         demoDiv.innerHTML = html;
         statusDiv.style.display = 'none';
         demoDiv.style.display = 'block';
@@ -413,22 +714,109 @@ function getOrder() {
 
 function generateRowHTML(index, stepResult) {
     return `
-        <tr class="hover:bg-slate-50 transition duration-150 ease-in-out group">
-            <td class="py-3 px-5 text-center text-slate-400 font-medium group-hover:text-slate-600">${index}</td>
-            <td class="py-3 px-5 font-medium text-slate-600 whitespace-nowrap">
-                <span class="text-blue-500" title="Moinho">${mill}</span>, 
-                <span class="text-orange-500" title="Padaria">${bake}</span>, 
-                <span class="text-purple-500" title="Mansão">${hm}</span>, 
-                <span class="text-cyan-500" title="Aqueduto">${waterwork}</span>
+        <tr>
+            <td class="c-idx">${index}</td>
+            <td class="c-nowrap">
+                <span class="n-mill" title="Moinho">${mill}</span>,
+                <span class="n-bake" title="Padaria">${bake}</span>,
+                <span class="n-hm" title="Mansão">${hm}</span>,
+                <span class="n-ww" title="Aqueduto">${waterwork}</span>
             </td>
-            <td class="py-3 px-5 font-mono text-xs text-slate-500 break-all tracking-tight">[${field.fields.join(', ')}]</td>
-            <td class="py-3 px-5 text-center font-bold text-emerald-600 bg-emerald-50/30">${formatNumber(Math.round(totalprod() * gold))}</td>
-            <td class="py-3 px-5">${stepResult.actionText}</td>
-            <td class="py-3 px-5 text-center font-medium text-slate-500">${stepResult.roi}</td>
-            <td class="py-3 px-5 text-right font-bold text-amber-700 bg-amber-50/50 border-l border-amber-100">${formatNumber(stepResult.cost)}</td>
+            <td class="c-mono">[${field.fields.join(', ')}]</td>
+            <td class="c-num c-prod">${formatNumber(Math.round(totalprod() * gold))}</td>
+            <td>${stepResult.actionText}</td>
+            <td class="c-num">${stepResult.roi}</td>
+            <td class="c-num c-cost">${formatNumber(stepResult.cost)}</td>
         </tr>
     `;
 }
+</script>
+
+<script>
+// Casco da aplicação: tema, sidebar e navegação (independente do otimizador)
+(function () {
+    const root = document.documentElement;
+    const shell = document.getElementById('shell');
+    const content = document.getElementById('content');
+    const menuBtn = document.getElementById('menu-btn');
+    const collapseBtn = document.getElementById('collapse-btn');
+    const themeBtn = document.getElementById('theme-btn');
+    const mq = window.matchMedia('(max-width: 767.98px)');
+
+    function store(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+    function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+    // Tema: system -> light -> dark
+    const THEMES = { system: ['🖥️', 'Sistema'], light: ['☀️', 'Claro'], dark: ['🌙', 'Escuro'] };
+    let theme = load('tbo-theme');
+    if (!THEMES[theme]) theme = 'system';
+    function applyTheme() {
+        if (theme === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', theme);
+        document.getElementById('theme-icon').textContent = THEMES[theme][0];
+        document.getElementById('theme-label').textContent = THEMES[theme][1];
+        themeBtn.setAttribute('aria-label', 'Tema: ' + THEMES[theme][1].toLowerCase() + '. Clique para alternar');
+    }
+    themeBtn.addEventListener('click', function () {
+        theme = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
+        store('tbo-theme', theme === 'system' ? null : theme);
+        applyTheme();
+    });
+    applyTheme();
+
+    // Sidebar recolhível (desktop)
+    function applyCollapsed(c) {
+        shell.classList.toggle('collapsed', c);
+        collapseBtn.setAttribute('aria-expanded', String(!c));
+        collapseBtn.setAttribute('aria-label', c ? 'Expandir menu lateral' : 'Recolher menu lateral');
+    }
+    let collapsed = load('tbo-collapsed') === '1';
+    applyCollapsed(collapsed);
+    collapseBtn.addEventListener('click', function () {
+        collapsed = !collapsed;
+        store('tbo-collapsed', collapsed ? '1' : '0');
+        applyCollapsed(collapsed);
+    });
+
+    // Drawer (mobile)
+    function setDrawer(open) {
+        shell.classList.toggle('drawer-open', open);
+        menuBtn.setAttribute('aria-expanded', String(open));
+        menuBtn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+    }
+    menuBtn.addEventListener('click', function () { setDrawer(!shell.classList.contains('drawer-open')); });
+    document.getElementById('backdrop').addEventListener('click', function () { setDrawer(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setDrawer(false); });
+    mq.addEventListener('change', function () { setDrawer(false); });
+
+    var hint = document.getElementById('empty-hint');
+    document.querySelector('.btn-primary').addEventListener('click', function () { hint.style.display = 'none'; });
+
+    // Navegação por seções
+    const items = Array.prototype.slice.call(document.querySelectorAll('.nav-item'));
+    const sections = items.map(function (a) { return document.getElementById(a.dataset.target); });
+    function setActive(id) {
+        items.forEach(function (a) {
+            if (a.dataset.target === id) { a.setAttribute('aria-current', 'true'); document.getElementById('crumb-current').textContent = a.textContent.trim(); }
+            else a.removeAttribute('aria-current');
+        });
+    }
+    items.forEach(function (a) {
+        a.addEventListener('click', function (e) {
+            e.preventDefault();
+            const el = document.getElementById(a.dataset.target);
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setActive(a.dataset.target);
+            setDrawer(false);
+        });
+    });
+    content.addEventListener('scroll', function () {
+        const top = content.getBoundingClientRect().top;
+        let current = sections[0].id;
+        if (content.scrollTop + content.clientHeight >= content.scrollHeight - 4) current = sections[sections.length - 1].id;
+        else sections.forEach(function (s) { if (s.getBoundingClientRect().top - top <= 80) current = s.id; });
+        setActive(current);
+    }, { passive: true });
+})();
 </script>
 </body>
 </html>

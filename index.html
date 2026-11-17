@@ -426,6 +426,24 @@
         .toast:empty { display: none; }
         .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+        .bulk-toast {
+            position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%); z-index: 65;
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .5rem .75rem;
+            width: max-content; max-width: calc(100vw - 1.5rem);
+            padding: .625rem .75rem .625rem 1rem; border-radius: 10px;
+            background: var(--surface); color: var(--text); border: 1px solid var(--border-strong);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+        }
+        .bulk-msg { font-weight: 500; }
+        .btn-bulk {
+            min-height: 2.35rem; padding: .25rem .875rem; display: inline-flex; align-items: center; justify-content: center;
+            background: var(--primary); color: var(--on-primary); border: 1px solid var(--primary);
+            border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap;
+        }
+        .btn-bulk:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+        .bulk-close { width: 2.25rem; height: 2.25rem; }
+        :root[data-contrast="high"] .bulk-toast { box-shadow: none; border-width: 2px; }
+
         /* ===== Preferências de texto ===== */
         :root[data-spacing="on"] * { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; }
         :root[data-spacing="on"] p { margin-bottom: 2em; }
@@ -444,18 +462,18 @@
         :root[data-motion="reduce"] *, :root[data-motion="reduce"] *::before, :root[data-motion="reduce"] *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 
         @media (forced-colors: active) {
-            .card, .btn, .table-card, .a11y-panel, .seg, .chip, .bar, select, .search input { border: 1px solid CanvasText; }
+            .card, .btn, .table-card, .a11y-panel, .seg, .chip, .bar, select, .search input, .bulk-toast { border: 1px solid CanvasText; }
             .nav-item[aria-current="page"], .seg button[aria-checked="true"], .seg button[aria-pressed="true"] { outline: 2px solid Highlight; }
             .bar > span { background: Highlight; }
             .switch input { forced-color-adjust: none; border-color: CanvasText; background: Canvas; }
             .switch input::after { background: CanvasText; }
             .switch input:checked { background: Highlight; border-color: Highlight; }
             .switch input:checked::after { background: HighlightText; }
-            .btn-primary { forced-color-adjust: none; background: ButtonFace; color: ButtonText; border-color: ButtonText; }
+            .btn-primary, .btn-bulk { forced-color-adjust: none; background: ButtonFace; color: ButtonText; border-color: ButtonText; }
         }
 
         @media print {
-            .sidebar, .appbar, .backdrop, .no-print, #status, .toast, .c-chk, .skip, .a11y-panel { display: none !important; }
+            .sidebar, .appbar, .backdrop, .no-print, #status, .toast, .bulk-toast, .c-chk, .skip, .a11y-panel { display: none !important; }
             html, body, .shell, .main-col, .content { height: auto !important; overflow: visible !important; display: block !important; }
             body { background: #fff; color: #000; }
             .view { display: none !important; }
@@ -740,6 +758,7 @@
                         <div class="progress-row">
                             <div class="bar" id="prog-bar" role="progressbar" aria-label="Progresso da fila" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><span></span></div>
                             <span class="prog-text" id="prog-text"></span>
+                            <button type="button" class="btn" id="btn-next" hidden>Próximo passo</button>
                             <button type="button" class="btn" id="btn-clear" disabled>Limpar concluídas</button>
                         </div>
                     </div>
@@ -747,6 +766,13 @@
                         <div id="demo" class="table-card hidden">
                             <!-- A tabela será gerada aqui -->
                         </div>
+                    </div>
+                    <div class="bulk-toast no-print" id="bulk-toast" role="region" aria-label="Marcar passos anteriores" hidden>
+                        <span class="bulk-msg" id="bulk-msg"></span>
+                        <button type="button" class="btn-bulk" id="btn-bulk-prev"></button>
+                        <button type="button" class="icon-btn bulk-close" id="btn-bulk-close" aria-label="Fechar aviso" title="Fechar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        </button>
                     </div>
                 </section>
 
@@ -762,13 +788,14 @@
                         <div class="card">
                             <h2>Projeto</h2>
                             <p>Código aberto em <a href="https://github.com/voaneves/travian-building-order" target="_blank" rel="noopener">github.com/voaneves/travian-building-order</a>.</p>
-                            <p>Sua configuração, o tema e as preferências de acessibilidade ficam salvos neste navegador. Nenhum dado é enviado a servidores.</p>
+                            <p>Sua configuração, o progresso da fila, o tema e as preferências de acessibilidade ficam salvos neste navegador. Nenhum dado é enviado a servidores.</p>
                         </div>
                         <div class="card">
                             <h2>Atalhos de teclado</h2>
                             <dl>
                                 <dt><kbd>Ctrl</kbd> + <kbd>Enter</kbd></dt><dd>Gerar a fila</dd>
                                 <dt><kbd>Enter</kbd></dt><dd>Gerar a fila (fora de campos)</dd>
+                                <dt><kbd>Shift</kbd> + clique</dt><dd>Marcar passo e todos os anteriores</dd>
                                 <dt><kbd>T</kbd></dt><dd>Alternar o tema</dd>
                                 <dt><kbd>[</kbd></dt><dd>Recolher ou expandir o menu</dd>
                                 <dt><kbd>Esc</kbd></dt><dd>Fechar painel ou menu</dd>
@@ -1154,7 +1181,12 @@ function generateRowHTML(index, stepResult) {
         if (m) return m[1];
         const leg = LEGACY[location.hash];
         if (leg) { setHash(leg); return leg; }
-        const r = currentRoute || 'config';
+        let saved = null;
+        if (!currentRoute) {
+            const sr = load('tbo-route');
+            if (sr === 'config' || sr === 'fila') saved = sr;
+        }
+        const r = currentRoute || saved || 'config';
         setHash(r); // hash vazio ou desconhecido: volta a uma rota válida
         return r;
     }
@@ -1162,6 +1194,8 @@ function generateRowHTML(index, stepResult) {
         const r = readRoute();
         const changed = r !== currentRoute;
         currentRoute = r;
+        if (r === 'config' || r === 'fila') store('tbo-route', r);
+        if (r !== 'fila' && typeof hideBulkPrompt === 'function') hideBulkPrompt();
         document.querySelectorAll('.view').forEach(function (v) { v.hidden = v.dataset.route !== r; });
         document.querySelectorAll('.nav-item').forEach(function (a) {
             if (a.dataset.route === r) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
@@ -1303,7 +1337,10 @@ function generateRowHTML(index, stepResult) {
     // ===== Resultado: resumo, filtro, concluídas, exportação =====
     const demo = $('demo');
     const hint = $('empty-hint');
+    const bulkToast = $('bulk-toast');
+    const btnNext = $('btn-next');
     let rows = [], done = {}, doneKey = '';
+    let bulkTarget = null, bulkTimer = null, lastShift = false, nextRow = null;
 
     function num(s) { return parseInt(String(s).replace(/\D/g, ''), 10) || 0; }
     function formatN(n) { return n.toLocaleString('pt-BR'); }
@@ -1351,6 +1388,7 @@ function generateRowHTML(index, stepResult) {
             if (d) n++; else if (!next) next = tr;
         });
         if (next) next.classList.add('next');
+        nextRow = next;
         const pct = trs.length ? Math.round(100 * n / trs.length) : 0;
         const bar = $('prog-bar');
         bar.setAttribute('aria-valuemax', String(trs.length));
@@ -1359,8 +1397,70 @@ function generateRowHTML(index, stepResult) {
         bar.firstElementChild.style.width = pct + '%';
         $('prog-text').textContent = n + ' de ' + trs.length + ' concluídos (' + pct + '%)';
         $('btn-clear').disabled = n === 0;
+        if (n > 0 && next) {
+            btnNext.hidden = false;
+            btnNext.textContent = 'Próximo (#' + next.dataset.step + ')';
+        } else {
+            btnNext.hidden = true;
+        }
     }
-    function saveDone() { store(doneKey, JSON.stringify(Object.keys(done))); }
+    function saveDone() {
+        saveCfg();
+        const keys = Object.keys(done);
+        store(doneKey, keys.length ? JSON.stringify(keys) : null);
+    }
+    function getPendingBefore(step) {
+        const list = [];
+        const trs = demo.querySelectorAll('tbody tr:not(.row-total)');
+        for (let i = 0; i < trs.length; i++) {
+            const stp = trs[i].dataset.step;
+            if (stp === String(step)) break;
+            if (!done[stp]) list.push(stp);
+        }
+        return list;
+    }
+    function hideBulkPrompt() {
+        clearTimeout(bulkTimer);
+        bulkTimer = null;
+        bulkTarget = null;
+        bulkToast.hidden = true;
+    }
+    function scheduleBulkHide() {
+        clearTimeout(bulkTimer);
+        bulkTimer = setTimeout(hideBulkPrompt, 12000);
+    }
+    function showBulkPrompt(step, pendingCount) {
+        if (!pendingCount) { hideBulkPrompt(); return; }
+        const t = $('toast');
+        clearTimeout(toastTimer);
+        t.classList.remove('show');
+        t.textContent = '';
+        bulkTarget = String(step);
+        $('bulk-msg').textContent = 'Passo ' + step + ' marcado.';
+        $('btn-bulk-prev').textContent = 'Marcar ' + pendingCount + (pendingCount === 1 ? ' anterior' : ' anteriores');
+        bulkToast.hidden = false;
+        scheduleBulkHide();
+        announce('Passo ' + step + ' marcado. ' + pendingCount + (pendingCount === 1 ? ' passo anterior pendente.' : ' passos anteriores pendentes.'));
+    }
+    function markThrough(step) {
+        const target = String(step);
+        const trs = demo.querySelectorAll('tbody tr:not(.row-total)');
+        let firstStep = null;
+        for (let i = 0; i < trs.length; i++) {
+            const stp = trs[i].dataset.step;
+            if (!firstStep) firstStep = stp;
+            done[stp] = true;
+            if (stp === target) break;
+        }
+        hideBulkPrompt();
+        saveDone();
+        updateProgress();
+        const msg = firstStep && firstStep !== target
+            ? 'Passos ' + firstStep + ' a ' + target + ' marcados como concluídos.'
+            : 'Passo ' + target + ' marcado como concluído.';
+        toast(msg);
+        announce(msg);
+    }
     function applyFilter() {
         const q = $('filter').value.trim().toLowerCase();
         let shown = 0, total = 0;
@@ -1404,6 +1504,7 @@ function generateRowHTML(index, stepResult) {
         try { (JSON.parse(load(doneKey) || '[]') || []).forEach(function (k) { done[k] = true; }); } catch (e) {}
         $('summary').classList.remove('hidden');
         $('toolbar').classList.remove('hidden');
+        hideBulkPrompt();
         updateSummary(); updateProgress(); applyFilter();
         if (goAfter) { goAfter = false; if (currentRoute !== 'fila') location.hash = '#/fila'; }
     }
@@ -1413,14 +1514,52 @@ function generateRowHTML(index, stepResult) {
         const t = e.target;
         if (!t.classList || !t.classList.contains('chk')) return;
         const stp = t.closest('tr').dataset.step;
+        const useShift = lastShift;
+        lastShift = false;
+        if (t.checked && useShift) {
+            markThrough(stp);
+            return;
+        }
         if (t.checked) done[stp] = true; else delete done[stp];
         saveDone(); updateProgress();
+        if (t.checked) {
+            const pending = getPendingBefore(stp);
+            if (pending.length) showBulkPrompt(stp, pending.length);
+            else if (bulkTarget && !getPendingBefore(bulkTarget).length) hideBulkPrompt();
+        } else if (bulkTarget === stp) {
+            hideBulkPrompt();
+        } else if (bulkTarget && !bulkToast.hidden) {
+            const pending = getPendingBefore(bulkTarget);
+            if (pending.length) showBulkPrompt(bulkTarget, pending.length);
+        }
     });
     demo.addEventListener('click', function (e) {
+        lastShift = !!e.shiftKey;
         const td = e.target.closest && e.target.closest('td.c-chk');
-        if (td && e.target.tagName !== 'INPUT') { const i = td.querySelector('input.chk'); if (i) { i.checked = !i.checked; i.dispatchEvent(new Event('change', { bubbles: true })); } }
+        if (td && e.target.tagName !== 'INPUT') {
+            const i = td.querySelector('input.chk');
+            if (i) { i.checked = !i.checked; i.dispatchEvent(new Event('change', { bubbles: true })); }
+        }
     });
-    $('btn-clear').addEventListener('click', function () { done = {}; saveDone(); updateProgress(); toast('Marcações limpas.'); });
+    $('btn-bulk-prev').addEventListener('click', function () {
+        if (bulkTarget) markThrough(bulkTarget);
+    });
+    $('btn-bulk-close').addEventListener('click', hideBulkPrompt);
+    bulkToast.addEventListener('mouseenter', function () { clearTimeout(bulkTimer); });
+    bulkToast.addEventListener('mouseleave', function () { if (!bulkToast.hidden) scheduleBulkHide(); });
+    bulkToast.addEventListener('focusin', function () { clearTimeout(bulkTimer); });
+    bulkToast.addEventListener('focusout', function (e) {
+        if (!bulkToast.hidden && (!e.relatedTarget || !bulkToast.contains(e.relatedTarget))) scheduleBulkHide();
+    });
+    btnNext.addEventListener('click', function () {
+        if (!nextRow) return;
+        if (nextRow.hidden) { $('filter').value = ''; applyFilter(); }
+        const behavior = TBO.effective(TBO.state).reduce ? 'auto' : 'smooth';
+        nextRow.scrollIntoView({ behavior: behavior, block: 'center' });
+        const chk = nextRow.querySelector('input.chk');
+        if (chk) chk.focus({ preventScroll: true });
+    });
+    $('btn-clear').addEventListener('click', function () { done = {}; hideBulkPrompt(); saveDone(); updateProgress(); toast('Marcações limpas.'); });
     $('filter').addEventListener('input', applyFilter);
 
     $('btn-copy').addEventListener('click', function () {
@@ -1445,6 +1584,7 @@ function generateRowHTML(index, stepResult) {
         if (e.key === 'Escape') {
             if (!panel.hidden) { e.preventDefault(); closePanel(true); }
             else if (drawerOpen) { e.preventDefault(); setDrawer(false, true); }
+            else if (!bulkToast.hidden) { e.preventDefault(); hideBulkPrompt(); }
             return;
         }
         if (e.defaultPrevented) return;

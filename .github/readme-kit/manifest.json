@@ -1,0 +1,46 @@
+{
+  "repo": "travian-building-order",
+  "branch": "main",
+  "lang": "pt-BR",
+  "license": "MIT",
+  "name": "Travian Building Order",
+  "tagline": "Calcula a ordem de construção que mais rende cereal para a sua aldeia no Travian.",
+  "description": "Otimizador que calcula a fila de construção de uma aldeia do Travian para maximizar a produção de cereal.",
+  "logo": {
+    "mark": "TB"
+  },
+  "buttons": [
+    {
+      "id": "live",
+      "text": "Abrir o otimizador",
+      "kind": "primary",
+      "font": "sans",
+      "href": "https://voaneves.github.io/travian-building-order/"
+    },
+    {
+      "id": "run",
+      "text": "Como começar",
+      "kind": "secondary",
+      "font": "sans",
+      "href": "https://github.com/voaneves/travian-building-order#como-começar"
+    },
+    {
+      "id": "hire",
+      "text": "Vamos conversar",
+      "kind": "primary",
+      "font": "sans",
+      "href": "https://voaneves.com/#contato",
+      "landing": false
+    },
+    {
+      "id": "site",
+      "text": "voaneves.com",
+      "kind": "secondary",
+      "font": "sans",
+      "href": "https://voaneves.com/",
+      "landing": false
+    }
+  ],
+  "landing": false,
+  "live_url": "https://voaneves.github.io/travian-building-order/"
+}

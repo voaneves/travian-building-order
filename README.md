@@ -5,7 +5,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/voaneves/travian-building-order/main/assets/logo/logo-dark.svg" />
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/voaneves/travian-building-order/main/assets/logo/logo-light.svg" />
-  <img alt="Logotipo Travian Building Order: disco dividido em tinta e papel com o monograma TB e um ponto vermelho" src="https://raw.githubusercontent.com/voaneves/travian-building-order/main/assets/logo/logo-light.svg" width="112" height="112" />
+  <img alt="Logo do Travian Building Order: blocos empilhados em degraus, com um ponto vermelho para a próxima construção" src="https://raw.githubusercontent.com/voaneves/travian-building-order/main/assets/logo/logo-light.svg" width="112" height="112" />
 </picture>
 
 <h1>Travian Building Order</h1>
